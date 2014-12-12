@@ -18,7 +18,6 @@
 	Board.prototype.equals = function(board) {};
 	Board.prototype.isEndState = function() {};
 	Board.prototype.generateNextStates = function(returnMoveString) {};
-	Board.prototype.init = function() {};
 
 	Chess.Board = Board;
 })();
