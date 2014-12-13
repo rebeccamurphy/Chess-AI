@@ -15,3 +15,8 @@ var Chess = {
 		this.ServerInterface.poll();
 	}
 };
+
+//adding additional functionality to classes
+String.prototype.replaceAt = function(index, ch) {
+	return this.substr(0,index) + ch + this.substr(index+ch.length);
+}
