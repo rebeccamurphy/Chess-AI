@@ -19,12 +19,11 @@
 		else
 			playerColor='W';
 
-		//var moveList =board.generateNextStates(playerColor);
-		var moveList=[1];
+		var moveList =board.generateNextStates(playerColor);
 		if (depth===0|| moveList.length ===0){
-			return [move, board.makeMove(move).eval()] //*(player*2-1) ]; 
+			board.move(move);
+			return [move, board.eval()] //*(player*2-1) ]; 
 		}
-		moveList=[];
 		var testNum =parseInt(window.prompt("how many moves are there?",""));
 		for (var i=0; i<testNum;i++){
 			moveList.push('1111b');
@@ -34,7 +33,7 @@
 		player=1-player;
 		for (var move in moveList){
 			var boardCopy = board.clone();
-			boardCopy.makeMove(move);
+			boardCopy.move(move);
 			var returnMove = this.alphaBeta(depth-1, alpha, beta, move, boardCopy, player);
 			var value = returnMove[1];
 			//flipBoard
@@ -47,7 +46,7 @@
 				}
 			}
 			else{
-				if (value>beta){
+				if (value>alpha){
 					alpha=value;
 					if (depth===this.limitDepth){
 						move=returnMove[0];
@@ -83,7 +82,7 @@
 			 while (board.hasMoreMoves()) 
 			 {
 			 move = board.getNextMove();
-			 nextBoard = board.makeMove(move);
+			 nextBoard = board.move(move);
 			 if(depth == 1)
 			 {
 			 // negamax principle: value is negative of evaluation nextBoard
