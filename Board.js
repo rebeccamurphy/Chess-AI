@@ -13,7 +13,9 @@
 
 	Board.prototype.getPieceAt = function(boardIndex) {};
 	Board.prototype.move = function(currentBoardIndex, newBoardIndex) {};
-	Board.prototype.eval = function() {};
+	Board.prototype.eval = function() {
+		return parseInt(window.prompt("node val",""));
+	};
 	Board.prototype.clone = function() {};
 	Board.prototype.equals = function(board) {};
 	Board.prototype.isEndState = function() {};

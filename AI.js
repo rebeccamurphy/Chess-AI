@@ -1,6 +1,6 @@
 (function() {
 	var AI = function() {
-		this.limitDepth= 2;
+		this.limitDepth= 4;
 		this.currDepth =0;
 		this.myTurn = true;
 		this.alpha = -Infinity;
@@ -10,57 +10,122 @@
 	Chess.AI = new AI();
 
 
-	AI.prototype.alpaBetaMinimax = function(node, alpha, beta) {
-	/*
-	   Returns best score for the player associated with the given node.
-	   Also sets the variable bestMove to the move associated with the
-	   best score at the root node.  
-	*/
-	   // check if at search bound
-	   if (this.limitDepth===this.currDepth)
-	      return node.eval();
+	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player) {
+		var playerColor ='';
+		if (player===0)
+			playerColor = Chess.color;
+		else if (Chess.color==='W')
+			playerColor='B';
+		else
+			playerColor='W';
 
-	   //check if leaf
-	   var children = node.generateNextStates(true);
-	  
-	   if (children.length === 0){
-	      if (node.state=== Chess.Board.state)//node is root
-	        bestMove = [] 
-	      return node.eval();
+		//var moveList =board.generateNextStates(playerColor);
+		var moveList=[1];
+		if (depth===0|| moveList.length ===0){
+			return [move, board.makeMove(move).eval()] //*(player*2-1) ]; 
 		}
-	   // initialize bestMove
-	   if (node.state=== Chess.Board.state) {//node is root
-	      bestMove = children[0][0];//best move string
-	      //check if there is only one option
-	      if (children.length === 1)
-	         return;
-	   }
-	   if (this.myTurn){
-	   	this.myTurn=false;
-	      for (var child in children){
-	         var result = alphaBetaMinimax(child, alpha, beta)
-	         if (result > alpha){
-	            alpha = result
-	            if (node.state===Chess.board.state)//node is root
-	               bestMove = child[0];
-	         }
-	         if (alpha >= beta)
-	            return alpha
-	      }
-	      return alpha
+		moveList=[];
+		var testNum =parseInt(window.prompt("how many moves are there?",""));
+		for (var i=0; i<testNum;i++){
+			moveList.push('1111b');
+		}
+		//sort moveList later;
 
-	   }
-	   else if (!this.myTurn){
-	      for (var child in children)
-	         result = alphaBetaMinimax(child, alpha, beta)
-	         if (result < beta){
-	            beta = result
-	            if (node.state===Chess.board.state)//node is root
-	               bestMove = child[0];
-	         }
-	         if (beta <= alpha)
-	            return beta
-	      return beta
-   		}
+		player=1-player;
+		for (var move in moveList){
+			var boardCopy = board.clone();
+			boardCopy.makeMove(move);
+			var returnMove = this.alphaBeta(depth-1, alpha, beta, move, boardCopy, player);
+			var value = returnMove[1];
+			//flipBoard
+			if (player===0){
+				if (value<=beta){
+					beta=value;
+					if (depth===this.limitDepth){
+						move=returnMove[0];
+					}
+				}
+			}
+			else{
+				if (value>beta){
+					alpha=value;
+					if (depth===this.limitDepth){
+						move=returnMove[0];
+					}
+				}
+
+			}
+			if (alpha>=beta){
+				if(player===0){
+					return [move, beta];
+				}
+				else{
+					return [move, alpha];
+				}
+			}
+
+		}
+		if (player===0) {
+			return [move, beta];
+		}
+		else {
+			return [move, alpha];
+		}
 	}
+
+	AI.prototype.SPPAlphaBeta= function(board,  depth, alpha, beta){/*
+			 int value = 0;
+			 if(board.isEnded())
+			 return evaluate(board); 
+			 int best = -MATE-1;
+			 int move; ChessBoard nextBoard;
+			 board.getOrderedMoves();
+			 while (board.hasMoreMoves()) 
+			 {
+			 move = board.getNextMove();
+			 nextBoard = board.makeMove(move);
+			 if(depth == 1)
+			 {
+			 // negamax principle: value is negative of evaluation nextBoard
+			 value = - evaluate(nextBoard);
+			if(Move.isHIT(move) || Move.isCheck(move) || Move.isPromotion(move))
+			 {
+			28
+			Figure 8: SPP cut-off
+			9 7 1
+			Positions with defined 
+			spatial locality
+			Positions resulting from
+			active moves
+			SPP (cut-off) // active move gets usual treatment
+			 if(value > best)
+			 best = value;
+			 }
+			 else
+			 {
+			 // passive move – sibling with spatial locality
+			 if(value > best)
+			 best = value;
+			 else if((best > value + MPD) || (alpha > value + MPD))
+			 break; // prune (break from loop; done)
+			 }
+			 }
+			 else
+			 {
+			 value = -SPPAlphaBeta(nextBoard, depth-1,-beta,-alpha);
+			 if(value > best)
+			 best = value;
+			 }
+			 if(best > alpha)
+			 alpha = best;
+			 if(best >= beta)
+			 break;
+			 }
+			 return best;
+			
+
+		*/
+}
+
+
 })();
