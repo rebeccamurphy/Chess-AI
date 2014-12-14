@@ -40,7 +40,7 @@
 	};
 
 	Board.prototype.eval = function(moveListLength, depth) {
-		return Chess.ratingSystem.getRating(this.state, moveListLength, depth);
+		return Chess.ratingSystem.getRating(this, moveListLength, depth);
 	};
 
 	Board.prototype.clone = function() {
