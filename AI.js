@@ -14,22 +14,19 @@
 		var playerColor ='';
 		if (player===0)
 			playerColor = Chess.color;
-		else if (Chess.color==='W')
-			playerColor='B';
+		else if (Chess.color===Chess.Colors.WHITE)
+			playerColor=Chess.Colors.BLACK;
 		else
-			playerColor='W';
+			playerColor=Chess.Colors.WHITE;
 
 		var moveList =board.generateNextStates(playerColor);
 		if (depth===0|| moveList.length ===0){
 			board.move(move);
-			return [move, board.eval()] //*(player*2-1) ]; 
-		}
-		var testNum =parseInt(window.prompt("how many moves are there?",""));
-		for (var i=0; i<testNum;i++){
-			moveList.push('1111b');
+			return [move, board.eval(playerColor) *(player*2-1)]; 
 		}
 		//sort moveList later;
 
+		//flip player
 		player=1-player;
 		for (var move in moveList){
 			var boardCopy = board.clone();

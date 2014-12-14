@@ -12,6 +12,7 @@ var Chess = {
 		this.gameId = gId;
 		this.color = color.match(/white|w/i).length > 0 ? "W" : "B";
 		this.boardState = new this.Board();
+		this.Rating = new this.Rating();
 		this.ServerInterface.poll();
 	}
 };

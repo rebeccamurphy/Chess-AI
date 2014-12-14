@@ -36,8 +36,8 @@
 		} 
 	};
 
-	Board.prototype.eval = function() {
-		return parseInt(window.prompt("node val",""));
+	Board.prototype.eval = function(playerColor) {
+
 	};
 
 	Board.prototype.clone = function() {
