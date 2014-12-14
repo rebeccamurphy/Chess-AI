@@ -19,7 +19,10 @@
 			"rnbqkbnr";
 	}
 	Board.prototype.getPieceAt = function(boardIndex) {
-		return this.state.charAt(this.Helpers.boardCoordinatesToIndex(boardIndex));
+		if (typeof boardIndex === "number")
+			return this.state.charAt(boardIndex);
+		else
+			return this.state.charAt(this.Helpers.boardCoordinatesToIndex(boardIndex));
 	};
 
 	Board.prototype.move = function(currentBoardIndex, newBoardIndex) {
@@ -36,8 +39,8 @@
 		} 
 	};
 
-	Board.prototype.eval = function(playerColor) {
-
+	Board.prototype.eval = function(moveListLength, depth) {
+		return Chess.Rating.getRating(this.state,moveListLength, depth);
 	};
 
 	Board.prototype.clone = function() {
