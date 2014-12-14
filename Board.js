@@ -87,8 +87,9 @@
 
 			if(diag) getDiagonalMoves.call(this, dist, i);
 			if(straight) getStraightMoves.call(this, dist, i);
+		}
 
-			function getDiagonalMoves(distance, startPos) {
+		function getDiagonalMoves(distance, startPos) {
 				var lastMod8 = startPos % 8;
 				
 				//UP LEFT
@@ -171,9 +172,29 @@
 				}
 			}
 
-			function getStraightMoves(distance, startPos) {}
+			function getStraightMoves(distance, startPos) {
+				//up, down, left, right
+				//dir[0] = up/down, dir[1] = left/right
+				for(dir of [[-1,0],[1,0],[0,-1],[0,1]]) {
+					for(var i=1; i<=distance; i++) {
+						var positionIndex = startPos + (dir[0]*i*8) + (dir[1]*i);
+						if(dir[0] === 0 && Math.floor(startPos / 8) !== Math.floor(positionIndex / 8)) break;
+						if(positionIndex < 0 || positionIndex > 63) break;
 
-		}
+						var pieceAtPosition = this.state.charAt(positionIndex);
+
+						if(pieceAtPosition === " ") {
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+						} else {
+							if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
+							else {
+								moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+								break;
+							}
+						}
+					}
+				}
+			}
 
 		return moves;
 	};
