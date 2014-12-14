@@ -76,7 +76,15 @@
 				straight = true;
 				dist = 8;
 			} else if(piece === Chess.Pieces[color].KNIGHT) {
-				// handle knight moves
+				for(positionOffset of [[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]]) {
+					var positionIndex = i + (positionOffset[0] * 8) + positionOffset[1];
+					if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((i + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
+						var pieceAtPosition = this.state.charAt(positionIndex);
+
+						if(pieceAtPosition === " " || this.Helpers.getPieceColor(pieceAtPosition) !== color)
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					}
+				}
 			} else if(piece === Chess.Pieces[color].ROOK) {
 				straight = true;
 				dist = 8;
@@ -140,6 +148,20 @@
 		}
 
 		return moves;
+	};
+
+	Board.prototype.toString = function() {
+		var str = "\n";
+		for(var i=0; i<this.state.length; i+=8) 
+			str += (8-(i/8)) + " " + this.state.slice(i,i+8) + '\n';
+
+		str += "\n  ";
+		for(var file of ['a','b','c','d','e','f','g','h'])
+			str += file;
+
+		str += '\n';
+
+		return str.split("").join(" ");
 	};
 
 	Board.prototype.Helpers = {};
