@@ -1,4 +1,7 @@
 (function() {
+	
+	var Chess = require('./Chess');
+
 	/** 
 	 * Piece naming conventions:
 	 * Uppercase = Black
@@ -82,7 +85,7 @@
 				straight = true;
 				dist = 8;
 			} else if(piece === Chess.Pieces[color].KNIGHT) {
-				for(positionOffset of [[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]]) {
+				[[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]].forEach(function(positionOffset) {
 					var positionIndex = i + (positionOffset[0] * 8) + positionOffset[1];
 					if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((i + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
 						var pieceAtPosition = this.state.charAt(positionIndex);
@@ -90,7 +93,7 @@
 						if(pieceAtPosition === " " || this.Helpers.getPieceColor(pieceAtPosition) !== color)
 							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 					}
-				}
+				}.bind(this));
 			} else if(piece === Chess.Pieces[color].ROOK) {
 				straight = true;
 				dist = 8;
@@ -131,7 +134,7 @@
 		function getDiagonalMoves(distance, startPos) {
 			//up left, up right, down left, down right
 			//dir[0] = up/down, dir[1] = left/right
-			for(dir of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
+			[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(function(dir) {
 				var lastMod8 = startPos % 8;
 				for(var i=1; i<=distance; i++) {
 					var positionIndex = startPos + (dir[0]*i*8) + (dir[1]*i);
@@ -151,13 +154,13 @@
 						}
 					}
 				}
-			}
+			}.bind(this));
 		}
 
 		function getStraightMoves(distance, startPos) {
 			//up, down, left, right
 			//dir[0] = up/down, dir[1] = left/right
-			for(dir of [[-1,0],[1,0],[0,-1],[0,1]]) {
+			[[-1,0],[1,0],[0,-1],[0,1]].forEach(function(dir) {
 				for(var i=1; i<=distance; i++) {
 					var positionIndex = startPos + (dir[0]*i*8) + (dir[1]*i);
 					if(dir[0] === 0 && Math.floor(startPos / 8) !== Math.floor(positionIndex / 8)) break;
@@ -175,7 +178,7 @@
 						}
 					}
 				}
-			}
+			}.bind(this));
 		}
 
 		return moves;
@@ -187,8 +190,7 @@
 			str += (8-(i/8)) + " " + this.state.slice(i,i+8) + '\n';
 
 		str += "\n  ";
-		for(var file of ['a','b','c','d','e','f','g','h'])
-			str += file;
+		['a','b','c','d','e','f','g','h'].forEach(function(file) {str += file;});
 
 		str += '\n';
 

@@ -1,0 +1,23 @@
+{
+  "name": "Chess-AI",
+  "version": "1.0.0",
+  "description": "Chess-AI\r ========\r A Chess AI made for CMSC404 Final Project in JavaScript.",
+  "main": "Play.js",
+  "dependencies": {
+    "request": "^2.51.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rebeccamurphy/Chess-AI.git"
+  },
+  "author": "Rob Whitaker & Rebecca Murphy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rebeccamurphy/Chess-AI/issues"
+  },
+  "homepage": "https://github.com/rebeccamurphy/Chess-AI"
+}

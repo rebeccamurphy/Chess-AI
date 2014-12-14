@@ -1,5 +1,7 @@
 (function(){
 	
+	var Chess = require('./Chess');
+
 	var Rating = function(){
 		this.boardState='';
 	}
@@ -164,5 +166,6 @@
 			}
 		return counter;
 	}
+	
 	Chess.Rating = Rating;
 })();
