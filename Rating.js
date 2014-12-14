@@ -1,5 +1,7 @@
 (function(){
 	
+	var Chess = require('./Chess');
+
 	var Rating = function(){
 
 	}	
@@ -59,5 +61,6 @@
 	Rating.prototype.ratePostional = function(color){
 		return 0;
 	}
+	
 	Chess.Rating = Rating;
 })();

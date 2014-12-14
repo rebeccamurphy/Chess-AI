@@ -1,4 +1,7 @@
 (function() {
+
+	var Chess = require('./Chess');
+
 	var AI = function() {
 		this.limitDepth= 4;
 		this.alpha = -Infinity;
