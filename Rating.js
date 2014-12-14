@@ -8,15 +8,15 @@
 		var counter =0;
 		var oppColor = Chess.Helpers.flipColor(Chess.color);
 		//for our team color
-		counter+= rateAttack(Chess.color);
-		counter+= rateMaterial(Chess.color);
-		counter+= rateMovebility(Chess.color);
-		counter+= ratePostional(Chess.color);
+		counter+= this.rateAttack(Chess.color);
+		counter+= this.rateMaterial(Chess.color);
+		counter+= this.rateMovebility(Chess.color);
+		counter+= this.ratePostional(Chess.color);
 		//for the other team color
-		counter-= rateAttack(oppColor);
-		counter-= rateMaterial(oppColor);
-		counter-= rateMovebility(oppColor);
-		counter-= ratePostional(oppColor);
+		counter-= this.rateAttack(oppColor);
+		counter-= this.rateMaterial(oppColor);
+		counter-= this.rateMovebility(oppColor);
+		counter-= this.ratePostional(oppColor);
 		
 		return -(counter+depth*50);
 	};
@@ -27,10 +27,10 @@
 
 	Rating.prototype.rateMaterial =function(color){
 		var counter =0, bishopCounter=0;
-		for (var i =0; i<Chess.Board.state.length; i++){
-			var piece = Chess.Board.getPieceAt(i);
+		for (var i =0; i<64; i++){
+			var piece = Chess.boardState.getPieceAt(i);
 			if (piece !==' '){
-				if (Chess.Board.Helpers.getPieceColor(piece)===color){
+				if (Chess.boardState.Helpers.getPieceColor(piece)===color){
 					switch(piece.toUpperCase()){
 						//centipawns, no decimals mang
 						case "P": counter+=100; 	break;
@@ -59,4 +59,5 @@
 	Rating.prototype.ratePostional = function(color){
 		return 0;
 	}
-});
+	Chess.Rating = Rating;
+})();

@@ -13,7 +13,7 @@
 	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player) {
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
-		var moveList =board.generateNextStates(playerColor);
+		var moveList =board.generateNextMoves(playerColor);
 		if (depth===0|| moveList.length ===0){
 			board.move(move);
 			return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 

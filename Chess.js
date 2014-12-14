@@ -6,6 +6,7 @@ var Chess = {
 	lastMoveNumber: -1,
 	secondsLeft: -1,
 	boardState: null,
+	ratingSystem:null,
 	gameId: -1,
 	teamNumber: 205,
 	teamSecret: "fa62a752",
@@ -14,7 +15,7 @@ var Chess = {
 		this.color = color;
 		this.opponentColor = this.Helpers.flipColor(this.color);
 		this.boardState = new this.Board();
-		this.Rating = new this.Rating();
+		this.ratingSystem = new this.Rating();
 		this.ServerInterface.poll();
 	}
 };
