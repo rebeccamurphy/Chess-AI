@@ -52,6 +52,8 @@
 	Board.prototype.equals = function(board) {return this.state === board.state;};
 
 	Board.prototype.generateNextMoves = function(color) {
+		//TODO: Special moves (ie castle)
+		//TODO: No illegal moves (putting your own king in check)
 		var moves = [];
 		var currentPiece = "";
 		var currentLocation = "";
@@ -65,12 +67,12 @@
 			var diag = false;
 			var straight = false;
 			var dist = 0;
+			var pawnDirection = 0;
 
 			if(piece === Chess.Pieces.White.PAWN) {
-				//handle white pawn
-				// getDiagonalMoves.call(this, 10, i);
+				pawnDirection = -1;
 			} else if(piece === Chess.Pieces.Black.PAWN) {
-				//handle black pawn
+				pawnDirection = 1;
 			} else if(piece === Chess.Pieces[color].KING) {
 				diag = true;
 				straight = true;
@@ -80,7 +82,15 @@
 				straight = true;
 				dist = 8;
 			} else if(piece === Chess.Pieces[color].KNIGHT) {
-				// handle knight moves
+				for(positionOffset of [[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]]) {
+					var positionIndex = i + (positionOffset[0] * 8) + positionOffset[1];
+					if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((i + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
+						var pieceAtPosition = this.state.charAt(positionIndex);
+
+						if(pieceAtPosition === " " || this.Helpers.getPieceColor(pieceAtPosition) !== color)
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					}
+				}
 			} else if(piece === Chess.Pieces[color].ROOK) {
 				straight = true;
 				dist = 8;
@@ -91,6 +101,31 @@
 
 			if(diag) getDiagonalMoves.call(this, dist, i);
 			if(straight) getStraightMoves.call(this, dist, i);
+
+			//if we are dealing with a pawn
+			if(pawnDirection !== 0) {
+				var pawnForward1 = i + pawnDirection * 8;
+				var pawnForward2 = i + pawnDirection * 16;
+				var pawnForwardLeft = i + pawnDirection * 8 - 1;
+				var pawnForwardRight = i + pawnDirection * 8 + 1;
+				var pawnInHomePosition = color === Chess.Colors.BLACK ? i >= 8 && i <= 15 : i >= 48 && i <= 55;
+
+				if(pawnForward1 >= 0 && pawnForward1 <= 63 && this.getPieceAt(pawnForward1) === " ") 
+					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
+
+				if(pawnInHomePosition && pawnForward2 >= 0 && pawnForward2 <= 63 && this.getPieceAt(pawnForward2) === " " && this.getPieceAt(pawnForward1) === " ") 
+					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
+
+				if(pawnForwardLeft >= 0 && pawnForwardLeft <= 63 &&
+					this.getPieceAt(pawnForwardLeft) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardLeft)) !== color && 
+					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardLeft / 8))
+					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
+
+				if(pawnForwardRight >= 0 && pawnForwardRight <= 63 &&
+					this.getPieceAt(pawnForwardRight) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardRight)) !== color && 
+					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardRight / 8))
+					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
+			}
 		}
 
 		function getDiagonalMoves(distance, startPos) {
@@ -144,6 +179,20 @@
 		}
 
 		return moves;
+	};
+
+	Board.prototype.toString = function() {
+		var str = "\n";
+		for(var i=0; i<this.state.length; i+=8) 
+			str += (8-(i/8)) + " " + this.state.slice(i,i+8) + '\n';
+
+		str += "\n  ";
+		for(var file of ['a','b','c','d','e','f','g','h'])
+			str += file;
+
+		str += '\n';
+
+		return str.split("").join(" ");
 	};
 
 	Board.prototype.Helpers = {};
