@@ -1,6 +1,7 @@
 var Chess = {
 	isMyTurn: false,
 	color: "",
+	opponentColor: "",
 	moveStack: [],
 	lastMoveNumber: -1,
 	secondsLeft: -1,
@@ -11,6 +12,7 @@ var Chess = {
 	init: function(gId, color) {
 		this.gameId = gId;
 		this.color = color;
+		this.opponentColor = this.Helpers.flipColor(this.color);
 		this.boardState = new this.Board();
 		this.Rating = new this.Rating();
 		this.ServerInterface.poll();

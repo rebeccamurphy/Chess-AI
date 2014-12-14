@@ -91,74 +91,17 @@
 
 			if(diag) getDiagonalMoves.call(this, dist, i);
 			if(straight) getStraightMoves.call(this, dist, i);
+		}
 
-			function getDiagonalMoves(distance, startPos) {
+		function getDiagonalMoves(distance, startPos) {
+			//up left, up right, down left, down right
+			//dir[0] = up/down, dir[1] = left/right
+			for(dir of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
 				var lastMod8 = startPos % 8;
-				
-				//UP LEFT
 				for(var i=1; i<=distance; i++) {
-					var positionIndex = startPos - (i*8) - i;
-					if(positionIndex % 8 >= lastMod8) break;
-					if(positionIndex < 0 || positionIndex > 63) break;
-
-					var pieceAtPosition = this.state.charAt(positionIndex);
-
-					if(pieceAtPosition === " ") {
-						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-					} else {
-						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
-						else {
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-							break;
-						}
-					}
-				}
-
-				//UP RIGHT
-				lastMod8 = startPos % 8;
-				for(var i=1; i<=distance; i++) {
-					var positionIndex = startPos - (i*8) + i;
-					if(positionIndex % 8 <= lastMod8) break;
-					if(positionIndex < 0 || positionIndex > 63) break;
-
-					var pieceAtPosition = this.state.charAt(positionIndex);
-
-					if(pieceAtPosition === " ") {
-						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-					} else {
-						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
-						else {
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-							break;
-						}
-					}
-				}
-
-				//DOWN RIGHT
-				lastMod8 = startPos % 8;
-				for(var i=1; i<=distance; i++) {
-					var positionIndex = startPos + (i*8) + i;
-					if(positionIndex % 8 <= lastMod8) break;
-					if(positionIndex < 0 || positionIndex > 63) break;
-
-					var pieceAtPosition = this.state.charAt(positionIndex);
-
-					if(pieceAtPosition === " ") {
-						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-					} else {
-						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
-						else {
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
-							break;
-						}
-					}
-				}
-
-				//DOWN LEFT
-				lastMod8 = startPos % 8;
-				for(var i=1; i<=distance; i++) {
-					var positionIndex = startPos + (i*8) - i;
-					if(positionIndex % 8 >= lastMod8) break;
+					var positionIndex = startPos + (dir[0]*i*8) + (dir[1]*i);
+					if(dir[1] < 0 && positionIndex % 8 >= lastMod8) break;
+					if(dir[1] > 0 && positionIndex % 8 <= lastMod8) break;
 					if(positionIndex < 0 || positionIndex > 63) break;
 
 					var pieceAtPosition = this.state.charAt(positionIndex);
@@ -174,9 +117,30 @@
 					}
 				}
 			}
+		}
 
-			function getStraightMoves(distance, startPos) {}
+		function getStraightMoves(distance, startPos) {
+			//up, down, left, right
+			//dir[0] = up/down, dir[1] = left/right
+			for(dir of [[-1,0],[1,0],[0,-1],[0,1]]) {
+				for(var i=1; i<=distance; i++) {
+					var positionIndex = startPos + (dir[0]*i*8) + (dir[1]*i);
+					if(dir[0] === 0 && Math.floor(startPos / 8) !== Math.floor(positionIndex / 8)) break;
+					if(positionIndex < 0 || positionIndex > 63) break;
 
+					var pieceAtPosition = this.state.charAt(positionIndex);
+
+					if(pieceAtPosition === " ") {
+						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					} else {
+						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
+						else {
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		return moves;
