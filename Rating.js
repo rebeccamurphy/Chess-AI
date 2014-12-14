@@ -24,7 +24,47 @@
 	};
 
 	Rating.prototype.rateAttack = function(color){
-		return 0;
+		//TODO
+		var counter =0;
+		var tempPosKing = 0;//position of this color king
+		for (var i =0; i<64; i++){
+			var piece = this.boardState.getPieceAt(i);
+			if (piece !==' '){
+				if (this.boardState.Helpers.getPieceColor(piece)===color){
+					switch(piece.toUpperCase()){
+						//centipawns, no decimals mang
+						case "P": 
+							//move current kind to position of pawn
+							//if kind isnt safe counter-=64
+							break;
+						case 'R':
+							//move current kind to position of rook
+							//if kind isnt safe counter-=500
+						 	break;
+						case 'N':
+							//move current kind to position of knight
+							//if kind isnt safe counter-=300
+							break;
+						case 'B': 
+							//move current kind to position of bishop
+							//if kind isnt safe counter-=300
+							break;
+						case 'Q':
+							//move current kind to position of queen
+							//if kind isnt safe counter-=900
+							break;
+						case 'K': 
+							//move current position of king
+							//if kind isnt safe counter-=200
+
+						break;
+
+					}
+				}
+			}
+		}
+		//reset king position to temp
+		return counter/2;
 	}
 
 	Rating.prototype.rateMaterial =function(color){
