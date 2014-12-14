@@ -1,8 +1,6 @@
 (function() {
 	var AI = function() {
 		this.limitDepth= 4;
-		this.currDepth =0;
-		this.myTurn = true;
 		this.alpha = -Infinity;
 		this.beta = Infinity;
 	};
