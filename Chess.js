@@ -16,7 +16,7 @@ var Chess = {
 		this.opponentColor = this.Helpers.flipColor(this.color);
 		this.boardState = new this.Board();
 		this.ratingSystem = new this.Rating();
-		this.ServerInterface.poll();
+		//this.ServerInterface.poll();
 	}
 };
 

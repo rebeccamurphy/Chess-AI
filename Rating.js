@@ -9,16 +9,16 @@
 		var counter =0, material=this.rateMaterial(Chess.color);
 		var oppColor = Chess.Helpers.flipColor(Chess.color);
 		//for our team color
-		counter+= this.rateAttack(Chess.color);
+		//counter+= this.rateAttack(Chess.color);
 		counter+= material;
-		counter+= this.rateMovebility(Chess.color);
-		counter+= this.ratePostional(Chess.color,moveListLength, depth, material);
+		//counter+= this.rateMovebility(Chess.color);
+		//counter+= this.ratePostional(Chess.color,moveListLength, depth, material);
 		//for the other team color
 		material=this.rateMaterial(oppColor);
-		counter-= this.rateAttack(oppColor);
+		//counter-= this.rateAttack(oppColor);
 		counter-= material;
-		counter-= this.rateMovebility(oppColor, moveListLength, depth, material);
-		counter-= this.ratePostional(oppColor, material);
+		//counter-= this.rateMovebility(oppColor, moveListLength, depth, material);
+		//counter-= this.ratePostional(oppColor, material);
 		
 		return -(counter+depth*50);
 	};
@@ -111,6 +111,7 @@
 	};
 
 	Rating.prototype.ratePostional = function(color, material){
+
 		var counter =0;
 		for (var i =0; i<64; i++){
 			var piece = this.boardState.getPieceAt(i);
@@ -118,20 +119,22 @@
 				if (this.boardState.Helpers.getPieceColor(piece)===color){
 					
 						//centipawns, no decimals mang
-						if (color===Chess.colors.WHITE){
+						if (color===Chess.Colors.WHITE){
+							//debugger;
 							switch(piece.toUpperCase()){
-							case "P": counter+=pawnBoardWhite[i/8][i%8]; 	break;
-							case 'R': counter+=rookBoardWhite[i/8][i%8]; 	break;
-							case 'N': counter+=knightBoardWhite[i/8][i%8]; 	break;
-							case 'B': counter+-bishopBoardWhite[i/8][i%8]; 	break;
-							case 'Q': counter+=queenBoardWhite[i/8][i%8]; 	break;
+
+							case "P": counter+=RatingReference.pawnBoardWhite[i]; 	break;
+							case 'R': counter+=RatingReference.rookBoardWhite[i]; 	break;
+							case 'N': counter+=RatingReference.knightBoardWhite[i]; 	break;
+							case 'B': counter+=RatingReference.bishopBoardWhite[i]; 	break;
+							case 'Q': counter+=RatingReference.queenBoardWhite[i]; 	break;
 							case 'K': 
 								if (material>=1750){
-									counter+=kingMidBoardWhite[i/8][i%8];
+									counter+=RatingReference.kingMidBoardWhite[i];
 									//TODO add a function to board to give the possible moves of the king *10
 								}
 								else{
-									counter+=kingEndBoardWhite[i/8][i%8];
+									counter+=RatingReference.kingEndBoardWhite[i];
 									//TODO add a function to board to give the possible moves of the king *30	
 								}
 								break;
@@ -139,18 +142,18 @@
 						}
 						else {
 							switch(piece.toUpperCase()){
-							case "P": counter+=pawnBoardBlack[i/8][i%8]; 	break;
-							case 'R': counter+=rookBoardBlack[i/8][i%8]; 	break;
-							case 'N': counter+=knightBoardBlack[i/8][i%8]; 	break;
-							case 'B': counter+-bishopBoardBlack[i/8][i%8]; 	break;
-							case 'Q': counter+=queenBoardBlack[i/8][i%8]; 	break;
+							case "P": counter+=RatingReference.pawnBoardBlack[i]; 		break;
+							case 'R': counter+=RatingReference.rookBoardBlack[i]; 		break;
+							case 'N': counter+=RatingReference.knightBoardBlack[i]; 	break;
+							case 'B': counter+=RatingReference.bishopBoardBlack[i]; 	break;
+							case 'Q': counter+=RatingReference.queenBoardBlack[i]; 		break;
 							case 'K': 
 								if (material>=1750){
-									counter+=kingMidBoardBlack[i/8][i%8];
+									counter+=RatingReference.kingMidBoardBlack[i];
 									//TODO add a function to board to give the possible moves of the king *10
 								}
 								else{
-									counter+=kingEndBoardBlack[i/8][i%8];
+									counter+=RatingReference.kingEndBoardBlack[i];
 									//TODO add a function to board to give the possible moves of the king *30	
 								}
 								break;

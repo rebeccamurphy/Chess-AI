@@ -8,7 +8,35 @@
 	Chess.AI = new AI();
 
 
+	AI.prototype.sortMoves = function(list){
+		var score =[];
+		for (var i =0; i<list.length; i++){
+			var boardCopy = Chess.Board.clone();
+			boardCopy.makeMove(list[i]);
+			score.push(-boardCopy.eval());
+		}
+		var newListA =[];
+		var newListB =list.slice();
+
+		for (var i = 0; i <Math.min(6, list.length); i++){//first few moves only
+			var max = -Infinity, maxLocation =0;
+			for (var j=0; j<list.length; j++){
+				if (score[j] > max){
+					max = score[j];
+					maxLocation=j;
+				}
+			score[maxLocation]= -Infinity;
+			newListA.push(list[maxLocation]);
+			newListB.splice(maxLocation, 1);
+			}
+		}
+
+		return newListA.push.apply(newListA, newListB);
+
+	}
+
 	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player) {
+		//debugger;
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
 		var moveList =board.generateNextMoves(playerColor);
@@ -16,14 +44,18 @@
 			board.move(move);
 			return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
 		}
+		//moveList = this.sortMoves(moveList);
+
 		//sort moveList later;
+
 
 		//flip player
 		player=1-player;
-		for (var move in moveList){
+		for (var i=0;i<moveList.length; i++){
+			var moveInList = moveList[i];
 			var boardCopy = board.clone();
-			boardCopy.move(move);
-			var returnMove = this.alphaBeta(depth-1, alpha, beta, move, boardCopy, player);
+			boardCopy.move(moveInList);
+			var returnMove = this.alphaBeta(depth-1, alpha, beta, moveInList, boardCopy, player);
 			var value = returnMove[1];
 			//flipBoard
 			if (player===0){
@@ -61,59 +93,6 @@
 		}
 	}
 
-	AI.prototype.SPPAlphaBeta= function(board,  depth, alpha, beta){/*
-			 int value = 0;
-			 if(board.isEnded())
-			 return evaluate(board); 
-			 int best = -MATE-1;
-			 int move; ChessBoard nextBoard;
-			 board.getOrderedMoves();
-			 while (board.hasMoreMoves()) 
-			 {
-			 move = board.getNextMove();
-			 nextBoard = board.move(move);
-			 if(depth == 1)
-			 {
-			 // negamax principle: value is negative of evaluation nextBoard
-			 value = - evaluate(nextBoard);
-			if(Move.isHIT(move) || Move.isCheck(move) || Move.isPromotion(move))
-			 {
-			28
-			Figure 8: SPP cut-off
-			9 7 1
-			Positions with defined 
-			spatial locality
-			Positions resulting from
-			active moves
-			SPP (cut-off) // active move gets usual treatment
-			 if(value > best)
-			 best = value;
-			 }
-			 else
-			 {
-			 // passive move – sibling with spatial locality
-			 if(value > best)
-			 best = value;
-			 else if((best > value + MPD) || (alpha > value + MPD))
-			 break; // prune (break from loop; done)
-			 }
-			 }
-			 else
-			 {
-			 value = -SPPAlphaBeta(nextBoard, depth-1,-beta,-alpha);
-			 if(value > best)
-			 best = value;
-			 }
-			 if(best > alpha)
-			 alpha = best;
-			 if(best >= beta)
-			 break;
-			 }
-			 return best;
-			
-
-		*/
-}
 
 
 })();

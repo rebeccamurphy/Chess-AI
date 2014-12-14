@@ -24,7 +24,7 @@
 						Chess.moveStack.unshift(data.lastmove);
 						Chess.Board.move(data.lastmove.slice(1,3), data.lastmove.slice(3,5)); //update game board with last move
 						//this should get the ball rolling with the ai
-						var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.Board, 0);
+						var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.Board, 0)[0];
 						this.sendMove(newMove);
 					}
 				}
