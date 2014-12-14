@@ -18,9 +18,11 @@
 			"pppppppp" +
 			"rnbqkbnr";
 	}
-
 	Board.prototype.getPieceAt = function(boardIndex) {
-		return this.state.charAt(this.Helpers.boardCoordinatesToIndex(boardIndex));
+		if (typeof boardIndex === "number")
+			return this.state.charAt(boardIndex);
+		else
+			return this.state.charAt(this.Helpers.boardCoordinatesToIndex(boardIndex));
 	};
 
 	Board.prototype.move = function(currentBoardIndex, newBoardIndex) {
@@ -37,7 +39,9 @@
 		} 
 	};
 
-	Board.prototype.eval = function() {};
+	Board.prototype.eval = function(moveListLength, depth) {
+		return Chess.ratingSystem.getRating(this.state, moveListLength, depth);
+	};
 
 	Board.prototype.clone = function() {
 		var b = new Board();
@@ -173,7 +177,6 @@
 	Board.prototype.Helpers.boardCoordinatesToIndex = function(boardCoordinates) {
 		var fileIndex = boardCoordinates.charCodeAt(0) - 97;
 		var rankIndex = 8 - parseInt(boardCoordinates.charAt(1));
-
 		return rankIndex*8 + fileIndex;
 	};
 
