@@ -41,6 +41,11 @@ Chess.Pieces = {
 	}
 }
 
+//and a few helper functions
+Chess.Helpers = {
+	flipColor : function(color) {return color === Chess.Colors.BLACK ? Chess.Colors.WHITE : Chess.Colors.BLACK;}
+}
+
 //adding additional functionality to classes
 String.prototype.replaceAt = function(index, ch) {
 	return this.substr(0,index) + ch + this.substr(index+ch.length);
