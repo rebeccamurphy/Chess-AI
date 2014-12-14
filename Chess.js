@@ -10,12 +10,42 @@ var Chess = {
 	teamSecret: "fa62a752",
 	init: function(gId, color) {
 		this.gameId = gId;
-		this.color = color.match(/white|w/i).length > 0 ? "W" : "B";
+		this.color = color;
 		this.boardState = new this.Board();
 		this.Rating = new this.Rating();
 		this.ServerInterface.poll();
 	}
 };
+
+//setting up a few constants
+Chess.Colors = {
+	BLACK  : "Black",
+	WHITE  : "White"
+}
+
+Chess.Pieces = {
+	Black : {
+		BISHOP : "B",
+		KNIGHT : "N",
+		PAWN   : "P",
+		KING   : "K",
+		QUEEN  : "Q",
+		ROOK   : "R"
+	},
+	White : {
+		BISHOP : "b",
+		KNIGHT : "n",
+		PAWN   : "p",
+		KING   : "k",
+		QUEEN  : "q",
+		ROOK   : "r"
+	}
+}
+
+//and a few helper functions
+Chess.Helpers = {
+	flipColor : function(color) {return color === Chess.Colors.BLACK ? Chess.Colors.WHITE : Chess.Colors.BLACK;}
+}
 
 //adding additional functionality to classes
 String.prototype.replaceAt = function(index, ch) {

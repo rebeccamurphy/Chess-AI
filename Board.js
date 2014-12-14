@@ -48,36 +48,54 @@
 	
 	Board.prototype.equals = function(board) {return this.state === board.state;};
 
-	Board.prototype.generateNextStates = function() {
+	Board.prototype.generateNextMoves = function(color) {
 		var moves = [];
 		var currentPiece = "";
 		var currentLocation = "";
 		for(var i=0; i<this.state.length; i++) {
-			if(this.state.charAt(i) === " ") continue;
+			if(this.state.charAt(i) === " " || this.Helpers.getPieceColor(this.state.charAt(i)) !== color) continue;
 
 			var piece = this.state.charAt(i);	
 			currentLocation = this.Helpers.indexToBoardCoordinates(i);
 			currentPiece = piece.toUpperCase();
 
-			if(piece === "p") {
-				getDiagonalMoves.call(this, 10, i, piece === piece.toUpperCase() ? "B" : "W");
-			} else if(piece === "P") {
-			} else if(piece === "k" || piece === "K") {
-			} else if(piece === "q" || piece === "Q") {
+			var diag = false;
+			var straight = false;
+			var dist = 0;
 
-			} else if(piece === "n" || piece === "N") {
-
-			} else if(piece === "r" || piece === "R") {
-
-			} else if(piece === "b" || piece === "B") {
-
+			if(piece === Chess.Pieces.White.PAWN) {
+				//handle white pawn
+				// getDiagonalMoves.call(this, 10, i);
+			} else if(piece === Chess.Pieces.Black.PAWN) {
+				//handle black pawn
+			} else if(piece === Chess.Pieces[color].KING) {
+				diag = true;
+				straight = true;
+				dist = 1;
+			} else if(piece === Chess.Pieces[color].QUEEN) {
+				diag = true;
+				straight = true;
+				dist = 8;
+			} else if(piece === Chess.Pieces[color].KNIGHT) {
+				// handle knight moves
+			} else if(piece === Chess.Pieces[color].ROOK) {
+				straight = true;
+				dist = 8;
+			} else if(piece === Chess.Pieces[color].BISHOP) {
+				diag = true;
+				dist = 8;
 			}
 
-			function getDiagonalMoves(distance, startPos, color) {
+			if(diag) getDiagonalMoves.call(this, dist, i);
+			if(straight) getStraightMoves.call(this, dist, i);
+
+			function getDiagonalMoves(distance, startPos) {
 				var lastMod8 = startPos % 8;
+				
+				//UP LEFT
 				for(var i=1; i<=distance; i++) {
 					var positionIndex = startPos - (i*8) - i;
-					if(positionIndex % 8 > lastMod8) break;
+					if(positionIndex % 8 >= lastMod8) break;
 					if(positionIndex < 0 || positionIndex > 63) break;
 
 					var pieceAtPosition = this.state.charAt(positionIndex);
@@ -85,8 +103,67 @@
 					if(pieceAtPosition === " ") {
 						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 					} else {
-						var pieceAtPositionColor = pieceAtPosition === pieceAtPosition.toUpperCase() ? "B" : "W";
-						if(color === pieceAtPositionColor) break;
+						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
+						else {
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							break;
+						}
+					}
+				}
+
+				//UP RIGHT
+				lastMod8 = startPos % 8;
+				for(var i=1; i<=distance; i++) {
+					var positionIndex = startPos - (i*8) + i;
+					if(positionIndex % 8 <= lastMod8) break;
+					if(positionIndex < 0 || positionIndex > 63) break;
+
+					var pieceAtPosition = this.state.charAt(positionIndex);
+
+					if(pieceAtPosition === " ") {
+						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					} else {
+						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
+						else {
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							break;
+						}
+					}
+				}
+
+				//DOWN RIGHT
+				lastMod8 = startPos % 8;
+				for(var i=1; i<=distance; i++) {
+					var positionIndex = startPos + (i*8) + i;
+					if(positionIndex % 8 <= lastMod8) break;
+					if(positionIndex < 0 || positionIndex > 63) break;
+
+					var pieceAtPosition = this.state.charAt(positionIndex);
+
+					if(pieceAtPosition === " ") {
+						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					} else {
+						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
+						else {
+							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							break;
+						}
+					}
+				}
+
+				//DOWN LEFT
+				lastMod8 = startPos % 8;
+				for(var i=1; i<=distance; i++) {
+					var positionIndex = startPos + (i*8) - i;
+					if(positionIndex % 8 >= lastMod8) break;
+					if(positionIndex < 0 || positionIndex > 63) break;
+
+					var pieceAtPosition = this.state.charAt(positionIndex);
+
+					if(pieceAtPosition === " ") {
+						moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+					} else {
+						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
 						else {
 							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 							break;
@@ -94,6 +171,8 @@
 					}
 				}
 			}
+
+			function getStraightMoves(distance, startPos) {}
 
 		}
 
@@ -111,6 +190,10 @@
 		var rankIndex = 8 - parseInt(boardCoordinates.charAt(1));
 		return rankIndex*8 + fileIndex;
 	};
+
+	Board.prototype.Helpers.getPieceColor = function(piece) {
+		if(piece !== " ") return piece.toUpperCase() === piece ? Chess.Colors.BLACK : Chess.Colors.WHITE;
+	}
 
 	Chess.Board = Board;
 })();
