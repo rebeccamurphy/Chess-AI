@@ -12,6 +12,7 @@ module.exports = (function() {
 		gameId: -1,
 		teamNumber: 205,
 		teamSecret: "fa62a752",
+		err: 0,
 		init: function(gId, color) {
 			this.gameId = gId;
 			this.color = color;
@@ -19,6 +20,7 @@ module.exports = (function() {
 			this.boardState = new this.Board();
 			this.ratingSystem = new this.Rating();
 			this.ServerInterface.poll();
+			console.log(Chess.boardState.toString());
 		}
 	};
 

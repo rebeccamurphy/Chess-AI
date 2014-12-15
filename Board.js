@@ -30,7 +30,7 @@
 
 	Board.prototype.move = function(move) {
 		//TODO: add more move verification
-		
+
 		var currentBoardIndex, newBoardIndex, piece;
 
 		if(move.length === 5 || move.length === 6) {
@@ -39,10 +39,9 @@
 			piece = this.getPieceAt(currentBoardIndex);
 		} 
 
-		if(move.length === 6 && move.charAt(0) === "P") {
-			debugger
+		if(move.length === 6 && move.charAt(0) === "P") 
 			piece = this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK ? move.substr(5).toUpperCase() : move.substr(5).toLowerCase();
-		}
+		
 
 		if(this.getPieceAt(currentBoardIndex) !== " ") {
 			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
@@ -127,7 +126,7 @@
 						for(var key in Chess.Pieces[color]) 
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1) + Chess.Pieces[color][key].toUpperCase());
-					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
+					else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
 				}
 
 				if(pawnInHomePosition && pawnForward2 >= 0 && pawnForward2 <= 63 && this.getPieceAt(pawnForward2) === " " && this.getPieceAt(pawnForward1) === " ") {
@@ -135,29 +134,29 @@
 						for(var key in Chess.Pieces[color]) 
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2) + Chess.Pieces[color][key].toUpperCase());
-					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
+					else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
 				}
 
 				if(pawnForwardLeft >= 0 && pawnForwardLeft <= 63 &&
 					this.getPieceAt(pawnForwardLeft) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardLeft)) !== color && 
 					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardLeft / 8)) {
 		
-					moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
 					if(pawnInEndRow(pawnForwardLeft))
 						for(var key in Chess.Pieces[color])
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft) + Chess.Pieces[color][key].toUpperCase());
+					else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
 				}
 
 				if(pawnForwardRight >= 0 && pawnForwardRight <= 63 &&
 					this.getPieceAt(pawnForwardRight) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardRight)) !== color && 
 					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardRight / 8)) {
 	
-					moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
 					if(pawnInEndRow(pawnForwardRight))
 						for(var key in Chess.Pieces[color])
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight) + Chess.Pieces[color][key].toUpperCase());
+					else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
 				}
 			}
 		}
