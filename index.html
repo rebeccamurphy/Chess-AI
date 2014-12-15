@@ -2,8 +2,15 @@
 <html>
 <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
+<script>
+//for getting rid of errors while playing in the browser
+var module = {};
+module.exports = {};
+var exports = {};
+var require = function(file) {if(file !== "./Chess") return; else return module.exports;};
+</script>
 <script src="Chess.js"></script>
+<script>var Chess = module.exports;</script>
 <script src="Board.js"></script>
 <script src="AI.js"></script>
 <script src="RatingGlobals.js"></script>

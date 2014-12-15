@@ -28,16 +28,24 @@
 			return this.state.charAt(this.Helpers.boardCoordinatesToIndex(boardIndex));
 	};
 
-	Board.prototype.move = function(currentBoardIndex, newBoardIndex) {
-		//TODO: Add support for promotion
-		if(currentBoardIndex.length === 5) currentBoardIndex = currentBoardIndex.substr(1);
-		if(currentBoardIndex.length === 4) {
-			newBoardIndex = currentBoardIndex.slice(2,4);
-			currentBoardIndex = currentBoardIndex.slice(0,2);
+	Board.prototype.move = function(move) {
+		//TODO: add more move verification
+		
+		var currentBoardIndex, newBoardIndex, piece;
+
+		if(move.length === 5 || move.length === 6) {
+			currentBoardIndex = move.substr(1).slice(0,2);
+			newBoardIndex = move.substr(1).slice(2,4);
+			piece = this.getPieceAt(currentBoardIndex);
+		} 
+
+		if(move.length === 6 && move.charAt(0) === "P") {
+			debugger
+			piece = this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK ? move.substr(5).toUpperCase() : move.substr(5).toLowerCase();
 		}
 
-		if(currentBoardIndex.length === 2 && newBoardIndex && newBoardIndex.length === 2 && this.getPieceAt(currentBoardIndex) !== " ") {
-			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), this.getPieceAt(currentBoardIndex));
+		if(this.getPieceAt(currentBoardIndex) !== " ") {
+			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
 			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
 		} 
 	};
@@ -91,7 +99,7 @@
 						var pieceAtPosition = this.state.charAt(positionIndex);
 
 						if(pieceAtPosition === " " || this.Helpers.getPieceColor(pieceAtPosition) !== color)
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							(pieceAtPosition !== " " ? moves.unshift.bind(moves) : moves.push.bind(moves))(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 					}
 				}.bind(this));
 			} else if(piece === Chess.Pieces[color].ROOK) {
@@ -112,22 +120,45 @@
 				var pawnForwardLeft = i + pawnDirection * 8 - 1;
 				var pawnForwardRight = i + pawnDirection * 8 + 1;
 				var pawnInHomePosition = color === Chess.Colors.BLACK ? i >= 8 && i <= 15 : i >= 48 && i <= 55;
+				var pawnInEndRow = function(pIndex) {return (pIndex >= 0 && pIndex <= 7) || (pIndex >= 56 && pIndex <= 63)};
 
-				if(pawnForward1 >= 0 && pawnForward1 <= 63 && this.getPieceAt(pawnForward1) === " ") 
+				if(pawnForward1 >= 0 && pawnForward1 <= 63 && this.getPieceAt(pawnForward1) === " ") {
+					if(pawnInEndRow(pawnForward1))
+						for(var key in Chess.Pieces[color]) 
+							if(key !== "KING" && key !== "PAWN") 
+								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1) + Chess.Pieces[color][key].toUpperCase());
 					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
+				}
 
-				if(pawnInHomePosition && pawnForward2 >= 0 && pawnForward2 <= 63 && this.getPieceAt(pawnForward2) === " " && this.getPieceAt(pawnForward1) === " ") 
+				if(pawnInHomePosition && pawnForward2 >= 0 && pawnForward2 <= 63 && this.getPieceAt(pawnForward2) === " " && this.getPieceAt(pawnForward1) === " ") {
+					if(pawnInEndRow(pawnForward2))
+						for(var key in Chess.Pieces[color]) 
+							if(key !== "KING" && key !== "PAWN") 
+								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2) + Chess.Pieces[color][key].toUpperCase());
 					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
+				}
 
 				if(pawnForwardLeft >= 0 && pawnForwardLeft <= 63 &&
 					this.getPieceAt(pawnForwardLeft) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardLeft)) !== color && 
-					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardLeft / 8))
-					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
+					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardLeft / 8)) {
+		
+					moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
+					if(pawnInEndRow(pawnForwardLeft))
+						for(var key in Chess.Pieces[color])
+							if(key !== "KING" && key !== "PAWN") 
+								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft) + Chess.Pieces[color][key].toUpperCase());
+				}
 
 				if(pawnForwardRight >= 0 && pawnForwardRight <= 63 &&
 					this.getPieceAt(pawnForwardRight) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardRight)) !== color && 
-					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardRight / 8))
-					moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
+					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardRight / 8)) {
+	
+					moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
+					if(pawnInEndRow(pawnForwardRight))
+						for(var key in Chess.Pieces[color])
+							if(key !== "KING" && key !== "PAWN") 
+								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight) + Chess.Pieces[color][key].toUpperCase());
+				}
 			}
 		}
 
@@ -149,7 +180,7 @@
 					} else {
 						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
 						else {
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 							break;
 						}
 					}
@@ -173,7 +204,7 @@
 					} else {
 						if(color === this.Helpers.getPieceColor(pieceAtPosition)) break;
 						else {
-							moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
+							moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(positionIndex));
 							break;
 						}
 					}
