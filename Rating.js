@@ -82,7 +82,12 @@
 						case 'N': counter+=300; 	break;
 						case 'B': bishopCounter++; 	break;
 						case 'Q': counter+=900; 	break;
-						//case 'K': counter+=10000; 	break;
+						case 'K': 
+							if (color===Chess.color)
+								counter+=10000; 	
+							else
+								counter+=9000;
+							break;
 
 					}
 				}
