@@ -52,10 +52,17 @@
 		var self = this;
 		request(self.moveLink + "/" + Chess.gameId + "/" + Chess.teamNumber + "/" + Chess.teamSecret + "/" + moveString + "/", function(err, response, body) {
 			if(!err) {
-				var data = JSON.parse(body);
-
+				var data;
 				console.log("Move request sent to server: " + moveString);
 				console.log("Server response: " + body);
+				
+				try {
+					data = JSON.parse(body);
+				} catch(e) {
+					Chess.isMyTurn = false;
+					self.poll();
+					return;
+				}
 				
 				if(data.result) {
 					Chess.isMyTurn = false;
