@@ -223,6 +223,7 @@
 						case 'N': counter+=300; 	break;
 						case 'B': bishopCounter++; 	break;
 						case 'Q': counter+=900; 	break;
+						case 'K': counter+=10000; 	break;
 					}
 				}
 			}

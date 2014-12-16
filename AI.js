@@ -45,11 +45,21 @@
 		var moveList =board.generateNextMoves(playerColor);
 		if (depth===0|| moveList.length ===0){
 			board.move(move);
-			if (board.isKingInCheck(playerColor))
-				return [move, Infinity*(player*2-1)]; 
-			else 
-				return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
+			return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
 		}
+
+		if (depth===this.limitDepth){
+			//return move if it immediately takes the king
+			for (var  i =0; i< moveList.length; i++){
+				var moveInList = moveList[i];
+				var piece = board.getPieceAt(moveInList.slice(-2));
+				if (piece.toUpperCase() === 'K' && board.Helpers.getPieceColor(piece)===Chess.opponentColor){
+					return [moveInList];
+				}
+
+			}
+		}
+
 		//moveList = this.sortMoves(moveList);
 
 		//sort moveList later;
@@ -61,32 +71,36 @@
 			var moveInList = moveList[i];
 			var boardCopy = board.clone();
 			boardCopy.move(moveInList);
-			var returnMove = this.alphaBeta(depth-1, alpha, beta, moveInList, boardCopy, player);
-			var value = returnMove[1];
-			//flipBoard
-			if (player===0){
-				if (value<=beta){
-					beta=value;
-					if (depth===this.limitDepth){
-						move=returnMove[0];
-					}
-				}
-			}
-			else{
-				if (value>alpha){
-					alpha=value;
-					if (depth===this.limitDepth){
-						move=returnMove[0];
-					}
-				}
+			//check that the move is not illegal, if so don't use it.
+			if (!boardCopy.isKingInCheck(playerColor)){
 
-			}
-			if (alpha>=beta){
-				if(player===0){
-					return [move, beta];
+				var returnMove = this.alphaBeta(depth-1, alpha, beta, moveInList, boardCopy, player);
+				var value = returnMove[1];
+				//flipBoard
+				if (player===0){
+					if (value<=beta){
+						beta=value;
+						if (depth===this.limitDepth){
+							move=returnMove[0];
+						}
+					}
 				}
 				else{
-					return [move, alpha];
+					if (value>alpha){
+						alpha=value;
+						if (depth===this.limitDepth){
+							move=returnMove[0];
+						}
+					}
+
+				}
+				if (alpha>=beta){
+					if(player===0){
+						return [move, beta];
+					}
+					else{
+						return [move, alpha];
+					}
 				}
 			}
 
