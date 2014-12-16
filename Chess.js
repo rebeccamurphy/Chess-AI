@@ -12,11 +12,21 @@ module.exports = (function() {
 		gameId: -1,
 		teamNumber: 205,
 		teamSecret: "fa62a752",
+		debug: {
+			teamNumber: 2,
+			teamSecret: "1a77594c"
+		},
 		err: 0,
-		init: function(gId, color) {
+		init: function(gId, color, debug) {
 			this.gameId = gId;
 			this.color = color;
 			this.opponentColor = this.Helpers.flipColor(this.color);
+
+			if(debug) {
+				this.teamNumber = this.debug.teamNumber;
+				this.teamSecret = this.debug.teamSecret;
+			}
+
 			this.boardState = new this.Board();
 			this.ratingSystem = new this.Rating();
 			this.ServerInterface.poll();

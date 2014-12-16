@@ -15,6 +15,6 @@ if(process.argv.length < 4) {
 
 
 console.log("Starting game...");
-Chess.init(process.argv[2], process.argv[3]);
+Chess.init(process.argv[2], process.argv[3], process.argv[4] === "debug");
 
 })();
