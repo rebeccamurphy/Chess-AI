@@ -20,6 +20,8 @@
 			"        " +
 			"pppppppp" +
 			"rnbqkbnr";
+
+		this.allowableSpecialMoves = 0; //xxxx (en passant) 0000 (castle a8rook, h8rook, a1rook, h1rook)
 	}
 	Board.prototype.getPieceAt = function(boardIndex) {
 		if (typeof boardIndex === "number")
@@ -30,23 +32,81 @@
 
 	Board.prototype.move = function(move) {
 		//TODO: add more move verification
-
 		var currentBoardIndex, newBoardIndex, piece;
 
-		if(move.length === 5 || move.length === 6) {
+		if(move.length === 5 || (move.length === 6 && move.charAt(0).toUpperCase() === "P")) {
 			currentBoardIndex = move.substr(1).slice(0,2);
 			newBoardIndex = move.substr(1).slice(2,4);
 			piece = this.getPieceAt(currentBoardIndex);
-		} 
+		} else return;
 
-		if(move.length === 6 && move.charAt(0) === "P") 
+		if(move.charAt(0).toUpperCase() !== piece.toUpperCase()) return;
+
+		if(move.length === 6) 
 			piece = this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK ? move.substr(5).toUpperCase() : move.substr(5).toLowerCase();
-		
 
-		if(this.getPieceAt(currentBoardIndex) !== " ") {
-			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
-			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
-		} 
+		//handle castling
+		if(move.length === 5 && piece.toUpperCase() === "K" && Math.abs(move.charCodeAt(1) - move.charCodeAt(3)) > 1) {
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) {
+				if(move.substring(1) === "e1g1" && this.getPieceAt("f1") === " " && this.getPieceAt("g1") === " " && this.getPieceAt("h1") === Chess.Pieces.White.ROOK) {
+					this.allowableSpecialMoves = this.allowableSpecialMoves | 3;
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("h1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("g1"), Chess.Pieces.White.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("f1"), Chess.Pieces.White.ROOK);
+				} else if(move.substring(1) === "e1c1" && this.getPieceAt("d1") === " " && this.getPieceAt("c1") === " " && this.getPieceAt("b1") === " " && this.getPieceAt("a1") === Chess.Pieces.White.ROOK) {
+					this.allowableSpecialMoves = this.allowableSpecialMoves | 3;
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("a1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("c1"), Chess.Pieces.White.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("d1"), Chess.Pieces.White.ROOK);
+				}
+			} else {
+				if(move.substring(1) === "e8g8" && this.getPieceAt("f8") === " " && this.getPieceAt("g8") === " " && this.getPieceAt("h8") === Chess.Pieces.Black.ROOK) {
+					this.allowableSpecialMoves = this.allowableSpecialMoves | 12;
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("h8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("g8"), Chess.Pieces.Black.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("f8"), Chess.Pieces.Black.ROOK);
+				} else if(move.substring(1) === "e8c8" && this.getPieceAt("d8") === " " && this.getPieceAt("c8") === " " && this.getPieceAt("b8") === " " && this.getPieceAt("a8") === Chess.Pieces.Black.ROOK) {
+					this.allowableSpecialMoves = this.allowableSpecialMoves | 12;
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("a8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("c8"), Chess.Pieces.Black.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("d8"), Chess.Pieces.Black.ROOK);
+				}
+			}
+
+			return;
+		}
+
+		//en passant
+		if(move.length === 5 && piece.toUpperCase() === "P" && Math.abs(move.charCodeAt(1) - move.charCodeAt(3)) === 1 && this.getPieceAt(move.substr(3)) === " ") {
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) {
+				if(this.getPieceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) + 8) === Chess.Pieces.Black.PAWN)
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) + 8, " ");
+			} else {
+				if(this.getPieceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) - 8) === Chess.Pieces.White.PAWN)
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) - 8, " ");
+			}					
+		}
+		
+		if(piece.toUpperCase() === "R") {
+			switch(move.slice(1,3)) {
+				case "a1": if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) this.allowableSpecialMoves |= 2; break;
+				case "h1": if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) this.allowableSpecialMoves |= 1; break;
+				case "a8": if(this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK) this.allowableSpecialMoves |= 8; break;
+				case "h8": if(this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK) this.allowableSpecialMoves |= 4; break;
+			}
+		}
+
+		if(piece.toUpperCase() === "K") {
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) this.allowableSpecialMoves |= 3;
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK) this.allowableSpecialMoves |= 12;
+		}
+
+		this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
+		this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
 	};
 
 	Board.prototype.eval = function(moveListLength, depth) {
@@ -87,6 +147,24 @@
 				diag = true;
 				straight = true;
 				dist = 1;
+
+				//handle castling
+				if(color === Chess.Colors.WHITE && (this.allowableSpecialMoves & 3) !== 3 && !this.isPositionInCheck(i, Chess.Colors.WHITE)) {
+					if((this.allowableSpecialMoves & 1) !== 1 && this.getPieceAt("f1") === " " && this.getPieceAt("g1") === " " && this.getPieceAt("h1") === Chess.Pieces.White.ROOK &&
+						!this.isPositionInCheck("f1",Chess.Colors.WHITE) && !this.isPositionInCheck("g1",Chess.Colors.WHITE))
+						moves.unshift("Ke1g1");
+					if((this.allowableSpecialMoves & 2) !== 2 && this.getPieceAt("d1") === " " && this.getPieceAt("c1") === " " && this.getPieceAt("b1") === " " && this.getPieceAt("a1") === Chess.Pieces.White.ROOK && 
+						!this.isPositionInCheck("d1",Chess.Colors.WHITE) && !this.isPositionInCheck("c1",Chess.Colors.WHITE) && !this.isPositionInCheck("b1",Chess.Colors.WHITE)) 
+						moves.unshift("Ke1c1");
+				} else if(color === Chess.Colors.BLACK && (this.allowableSpecialMoves & 12) !== 12 && !this.isPositionInCheck(i, Chess.Colors.BLACK)) {
+					if((this.allowableSpecialMoves & 4) !== 4 && this.getPieceAt("f8") === " " && this.getPieceAt("g8") === " " && this.getPieceAt("h8") === Chess.Pieces.Black.ROOK && 
+						!this.isPositionInCheck("f8",Chess.Colors.BLACK) && !this.isPositionInCheck("g8",Chess.Colors.BLACK))
+						moves.unshift("Ke8g8");
+					if((this.allowableSpecialMoves & 8 !== 8) && this.getPieceAt("d8") === " " && this.getPieceAt("c8") === " " && this.getPieceAt("b8") === " " && this.getPieceAt("a8") === Chess.Pieces.Black.ROOK && 
+						!this.isPositionInCheck("d8",Chess.Colors.BLACK) && !this.isPositionInCheck("c8",Chess.Colors.BLACK) && !this.isPositionInCheck("b8",Chess.Colors.BLACK)) 
+						moves.unshift("Ke8c8");
+				}
+
 			} else if(piece === Chess.Pieces[color].QUEEN) {
 				diag = true;
 				straight = true;
@@ -122,44 +200,46 @@
 				var pawnInEndRow = function(pIndex) {return (pIndex >= 0 && pIndex <= 7) || (pIndex >= 56 && pIndex <= 63)};
 
 				if(pawnForward1 >= 0 && pawnForward1 <= 63 && this.getPieceAt(pawnForward1) === " ") {
-					if(pawnInEndRow(pawnForward1))
+					if(pawnInEndRow(pawnForward1)) {
 						for(var key in Chess.Pieces[color]) 
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1) + Chess.Pieces[color][key].toUpperCase());
-					else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
+					} else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward1));
 				}
 
 				if(pawnInHomePosition && pawnForward2 >= 0 && pawnForward2 <= 63 && this.getPieceAt(pawnForward2) === " " && this.getPieceAt(pawnForward1) === " ") {
-					if(pawnInEndRow(pawnForward2))
+					if(pawnInEndRow(pawnForward2)) {
 						for(var key in Chess.Pieces[color]) 
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2) + Chess.Pieces[color][key].toUpperCase());
-					else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
+					} else moves.push(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForward2));
 				}
 
 				if(pawnForwardLeft >= 0 && pawnForwardLeft <= 63 &&
 					this.getPieceAt(pawnForwardLeft) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardLeft)) !== color && 
 					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardLeft / 8)) {
 		
-					if(pawnInEndRow(pawnForwardLeft))
+					if(pawnInEndRow(pawnForwardLeft)) {
 						for(var key in Chess.Pieces[color])
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft) + Chess.Pieces[color][key].toUpperCase());
-					else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
+					} else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardLeft));
 				}
 
 				if(pawnForwardRight >= 0 && pawnForwardRight <= 63 &&
 					this.getPieceAt(pawnForwardRight) !== " " && this.Helpers.getPieceColor(this.getPieceAt(pawnForwardRight)) !== color && 
 					Math.floor((i + pawnDirection * 8) / 8) === Math.floor(pawnForwardRight / 8)) {
 	
-					if(pawnInEndRow(pawnForwardRight))
+					if(pawnInEndRow(pawnForwardRight)) {
 						for(var key in Chess.Pieces[color])
 							if(key !== "KING" && key !== "PAWN") 
 								moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight) + Chess.Pieces[color][key].toUpperCase());
-					else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
+					} else moves.unshift(currentPiece + currentLocation + this.Helpers.indexToBoardCoordinates(pawnForwardRight));
 				}
 			}
 		}
+
+
 
 		function getDiagonalMoves(distance, startPos) {
 			//up left, up right, down left, down right
@@ -215,7 +295,6 @@
 	};
 
 	Board.prototype.isKingInCheck = function(color) {
-		var self = this;
 		var kingPos;
 		var kingInDanger = false;
 		for(var i=0; i<this.state.length; i++) {
@@ -225,13 +304,23 @@
 			}
 		}
 
+		return this.isPositionInCheck(kingPos, color);
+	}
+
+	Board.prototype.isPositionInCheck = function(pos, color) {
+		var self = this;
+		var danger = false;
+
+		if(typeof pos !== "number")
+			pos = this.Helpers.boardCoordinatesToIndex(pos);
+
 		//up left, up right, down left, down right
 		//dir[0] = up/down, dir[1] = left/right
 		[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(function(dir) {
-			if(kingInDanger) return;
-			var lastMod8 = kingPos % 8;
+			if(danger) return;
+			var lastMod8 = pos % 8;
 			for(var i=1; i<=8; i++) {
-				var positionIndex = kingPos + (dir[0]*i*8) + (dir[1]*i);
+				var positionIndex = pos + (dir[0]*i*8) + (dir[1]*i);
 				if(dir[1] < 0 && positionIndex % 8 >= lastMod8) break;
 				if(dir[1] > 0 && positionIndex % 8 <= lastMod8) break;
 				if(positionIndex < 0 || positionIndex > 63) break;
@@ -240,10 +329,10 @@
 				if(pieceAtPosition !== " ") {
 					if(self.Helpers.getPieceColor(pieceAtPosition) !== color) {
 						var piece = pieceAtPosition.toUpperCase();
-						if(piece === "Q" || piece === "B") kingInDanger = true;
-						else if(piece === "K" && i === 1) kingInDanger = true;
-						else if(piece === "P" && i === 1 && color === Chess.Colors.BLACK && Math.floor(positionIndex / 8) > Math.floor(kingPos / 8)) kingInDanger = true;
-						else if(piece === "P" && i === 1 && color === Chess.Colors.WHITE && Math.floor(positionIndex / 8) < Math.floor(kingPos / 8)) kingInDanger = true;
+						if(piece === "Q" || piece === "B") danger = true;
+						else if(piece === "K" && i === 1) danger = true;
+						else if(piece === "P" && i === 1 && color === Chess.Colors.BLACK && Math.floor(positionIndex / 8) > Math.floor(pos / 8)) danger = true;
+						else if(piece === "P" && i === 1 && color === Chess.Colors.WHITE && Math.floor(positionIndex / 8) < Math.floor(pos / 8)) danger = true;
 					}
 					break;
 				}
@@ -253,10 +342,10 @@
 		//up, down, left, right
 		//dir[0] = up/down, dir[1] = left/right
 		[[-1,0],[1,0],[0,-1],[0,1]].forEach(function(dir) {
-			if(kingInDanger) return;
+			if(danger) return;
 			for(var i=1; i<=8; i++) {
-				var positionIndex = kingPos + (dir[0]*i*8) + (dir[1]*i);
-				if(dir[0] === 0 && Math.floor(kingPos / 8) !== Math.floor(positionIndex / 8)) break;
+				var positionIndex = pos + (dir[0]*i*8) + (dir[1]*i);
+				if(dir[0] === 0 && Math.floor(pos / 8) !== Math.floor(positionIndex / 8)) break;
 				if(positionIndex < 0 || positionIndex > 63) break;
 
 				var pieceAtPosition = self.state.charAt(positionIndex);
@@ -264,8 +353,8 @@
 				if(pieceAtPosition !== " ") {
 					if(self.Helpers.getPieceColor(pieceAtPosition) !== color) {
 						var piece = pieceAtPosition.toUpperCase();
-						if(piece === "Q" || piece === "R") kingInDanger = true;
-						else if(piece === "K" && i === 1) kingInDanger = true;
+						if(piece === "Q" || piece === "R") danger = true;
+						else if(piece === "K" && i === 1) danger = true;
 					}
 					break;
 				}
@@ -273,16 +362,16 @@
 		});
 
 		[[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]].forEach(function(positionOffset) {
-			if(kingInDanger) return;
-			var positionIndex = kingPos + (positionOffset[0] * 8) + positionOffset[1];
-			if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((kingPos + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
+			if(danger) return;
+			var positionIndex = pos + (positionOffset[0] * 8) + positionOffset[1];
+			if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((pos + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
 				var pieceAtPosition = self.state.charAt(positionIndex);
 
-				if(pieceAtPosition.toUpperCase() === "N" && self.Helpers.getPieceColor(pieceAtPosition) !== color) kingInDanger = true;
+				if(pieceAtPosition.toUpperCase() === "N" && self.Helpers.getPieceColor(pieceAtPosition) !== color) danger = true;
 			}
 		});
 
-		return kingInDanger;
+		return danger;
 	};
 
 	Board.prototype.toString = function() {
