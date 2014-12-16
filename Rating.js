@@ -14,12 +14,12 @@
 		//counter+= this.rateAttack(Chess.color);
 		counter+= material;
 		//counter+= this.rateMovebility(Chess.color);
-		//counter+= this.ratePostional(Chess.color,moveListLength, depth, material);
+		counter+= this.ratePostional(Chess.color,moveListLength, depth, material);
 		//for the other team color
 		material=this.rateMaterial(oppColor);
 		//counter-= this.rateAttack(oppColor);
 		counter-= material;
-		//counter-= this.rateMovebility(oppColor, moveListLength, depth, material);
+		counter-= this.rateMovebility(oppColor, moveListLength, depth, material);
 		//counter-= this.ratePostional(oppColor, material);
 		
 		return -(counter+depth*50);
