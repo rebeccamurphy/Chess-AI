@@ -214,6 +214,77 @@
 		return moves;
 	};
 
+	Board.prototype.isKingInCheck = function(color) {
+		var self = this;
+		var kingPos;
+		var kingInDanger = false;
+		for(var i=0; i<this.state.length; i++) {
+			if(this.state.charAt(i).toUpperCase() === "K" && this.Helpers.getPieceColor(this.state.charAt(i)) === color) {
+				kingPos = i;
+				break;
+			}
+		}
+
+		//up left, up right, down left, down right
+		//dir[0] = up/down, dir[1] = left/right
+		[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(function(dir) {
+			if(kingInDanger) return;
+			var lastMod8 = kingPos % 8;
+			for(var i=1; i<=8; i++) {
+				var positionIndex = kingPos + (dir[0]*i*8) + (dir[1]*i);
+				if(dir[1] < 0 && positionIndex % 8 >= lastMod8) break;
+				if(dir[1] > 0 && positionIndex % 8 <= lastMod8) break;
+				if(positionIndex < 0 || positionIndex > 63) break;
+
+				var pieceAtPosition = self.state.charAt(positionIndex);
+				if(pieceAtPosition !== " ") {
+					if(self.Helpers.getPieceColor(pieceAtPosition) !== color) {
+						var piece = pieceAtPosition.toUpperCase();
+						if(piece === "Q" || piece === "B") kingInDanger = true;
+						else if(piece === "K" && i === 1) kingInDanger = true;
+						else if(piece === "P" && i === 1 && color === Chess.Colors.BLACK && Math.floor(positionIndex / 8) > Math.floor(kingPos / 8)) kingInDanger = true;
+						else if(piece === "P" && i === 1 && color === Chess.Colors.WHITE && Math.floor(positionIndex / 8) < Math.floor(kingPos / 8)) kingInDanger = true;
+					}
+					break;
+				}
+			}
+		});
+
+		//up, down, left, right
+		//dir[0] = up/down, dir[1] = left/right
+		[[-1,0],[1,0],[0,-1],[0,1]].forEach(function(dir) {
+			if(kingInDanger) return;
+			for(var i=1; i<=8; i++) {
+				var positionIndex = kingPos + (dir[0]*i*8) + (dir[1]*i);
+				if(dir[0] === 0 && Math.floor(kingPos / 8) !== Math.floor(positionIndex / 8)) break;
+				if(positionIndex < 0 || positionIndex > 63) break;
+
+				var pieceAtPosition = self.state.charAt(positionIndex);
+
+				if(pieceAtPosition !== " ") {
+					if(self.Helpers.getPieceColor(pieceAtPosition) !== color) {
+						var piece = pieceAtPosition.toUpperCase();
+						if(piece === "Q" || piece === "R") kingInDanger = true;
+						else if(piece === "K" && i === 1) kingInDanger = true;
+					}
+					break;
+				}
+			}
+		});
+
+		[[-2,-1],[-2,1],[-1,-2],[-1,2],[2,-1],[2,1],[1,-2],[1,2]].forEach(function(positionOffset) {
+			if(kingInDanger) return;
+			var positionIndex = kingPos + (positionOffset[0] * 8) + positionOffset[1];
+			if(positionIndex <= 63 && positionIndex >= 0 && Math.floor((kingPos + (positionOffset[0] * 8)) / 8) === Math.floor(positionIndex / 8)) {
+				var pieceAtPosition = self.state.charAt(positionIndex);
+
+				if(pieceAtPosition.toUpperCase() === "N" && self.Helpers.getPieceColor(pieceAtPosition) !== color) kingInDanger = true;
+			}
+		});
+
+		return kingInDanger;
+	};
+
 	Board.prototype.toString = function() {
 		var str = "\n";
 		for(var i=0; i<this.state.length; i+=8) 
