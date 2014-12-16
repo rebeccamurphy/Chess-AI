@@ -45,12 +45,15 @@
 		var moveList =board.generateNextMoves(playerColor);
 		if (depth===0|| moveList.length ===0){
 			board.move(move);
-			return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
+			if (board.isKingInCheck(playerColor))
+				return [move, Infinity*(player*2-1)]; 
+			else 
+				return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
 		}
 		//moveList = this.sortMoves(moveList);
 
 		//sort moveList later;
-
+		//remove moves that make king in check
 
 		//flip player
 		player=1-player;
