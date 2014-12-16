@@ -39,7 +39,7 @@
 	}
 
 	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player) {
-		//debugger;
+		//
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
 		var moveList =board.generateNextMoves(playerColor);

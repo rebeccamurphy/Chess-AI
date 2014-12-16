@@ -109,8 +109,8 @@
 		this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
 	};
 
-	Board.prototype.eval = function(moveListLength, depth) {
-		return Chess.ratingSystem.getRating(this, moveListLength, depth);
+	Board.prototype.eval = function(playerColor, moveListLength, depth) {
+		return Chess.ratingSystem.getRating(this,playerColor, moveListLength, depth);
 	};
 
 	Board.prototype.clone = function() {
