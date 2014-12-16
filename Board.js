@@ -30,23 +30,63 @@
 
 	Board.prototype.move = function(move) {
 		//TODO: add more move verification
-
 		var currentBoardIndex, newBoardIndex, piece;
 
-		if(move.length === 5 || move.length === 6) {
+		if(move.length === 5 || (move.length === 6 && move.charAt(0).toUpperCase() === "P")) {
 			currentBoardIndex = move.substr(1).slice(0,2);
 			newBoardIndex = move.substr(1).slice(2,4);
 			piece = this.getPieceAt(currentBoardIndex);
-		} 
+		} else return;
 
-		if(move.length === 6 && move.charAt(0) === "P") 
+		if(move.charAt(0).toUpperCase() !== piece.toUpperCase()) return;
+
+		if(move.length === 6) 
 			piece = this.Helpers.getPieceColor(piece) === Chess.Colors.BLACK ? move.substr(5).toUpperCase() : move.substr(5).toLowerCase();
-		
 
-		if(this.getPieceAt(currentBoardIndex) !== " ") {
-			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
-			this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
-		} 
+		//handle castling
+		if(move.length === 5 && piece.toUpperCase() === "K" && Math.abs(move.charCodeAt(1) - move.charCodeAt(3)) > 1) {
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) {
+				if(move.substring(1) === "e1g1" && this.getPieceAt("f1") === " " && this.getPieceAt("g1") === " " && this.getPieceAt("h1") === Chess.Pieces.White.ROOK) {
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("h1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("g1"), Chess.Pieces.White.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("f1"), Chess.Pieces.White.ROOK);
+				} else if(move.substring(1) === "e1c1" && this.getPieceAt("d1") === " " && this.getPieceAt("c1") === " " && this.getPieceAt("b1") === " " && this.getPieceAt("a1") === Chess.Pieces.White.ROOK) {
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("a1"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("c1"), Chess.Pieces.White.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("d1"), Chess.Pieces.White.ROOK);
+				}
+			} else {
+				if(move.substring(1) === "e8g8" && this.getPieceAt("f8") === " " && this.getPieceAt("g8") === " " && this.getPieceAt("h8") === Chess.Pieces.Black.ROOK) {
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("h8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("g8"), Chess.Pieces.Black.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("f8"), Chess.Pieces.Black.ROOK);
+				} else if(move.substring(1) === "e8c8" && this.getPieceAt("d8") === " " && this.getPieceAt("c8") === " " && this.getPieceAt("b8") === " " && this.getPieceAt("a8") === Chess.Pieces.Black.ROOK) {
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("e8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("a8"), " ");
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("c8"), Chess.Pieces.Black.KING);
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex("d8"), Chess.Pieces.Black.ROOK);
+				}
+			}
+
+			return;
+		}
+
+		//en passant
+		if(move.length === 5 && piece.toUpperCase() === "P" && Math.abs(move.charCodeAt(1) - move.charCodeAt(3)) === 1 && this.getPieceAt(move.substr(3)) === " ") {
+			if(this.Helpers.getPieceColor(piece) === Chess.Colors.WHITE) {
+				if(this.getPieceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) + 8) === Chess.Pieces.Black.PAWN)
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) + 8, " ");
+			} else {
+				if(this.getPieceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) - 8) === Chess.Pieces.White.PAWN)
+					this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(move.substr(3)) - 8, " ");
+			}					
+		}
+		
+		this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(newBoardIndex), piece);
+		this.state = this.state.replaceAt(this.Helpers.boardCoordinatesToIndex(currentBoardIndex), " ");
 	};
 
 	Board.prototype.eval = function(moveListLength, depth) {
