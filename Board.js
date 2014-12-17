@@ -116,10 +116,11 @@
 	Board.prototype.clone = function() {
 		var b = new Board();
 		b.state = this.state;
+		b.allowableSpecialMoves = this.allowableSpecialMoves;
 		return b;
 	};
 	
-	Board.prototype.equals = function(board) {return this.state === board.state;};
+	Board.prototype.equals = function(board) {return this.state === board.state && this.allowableSpecialMoves === board.allowableSpecialMoves;};
 
 	Board.prototype.generateNextMoves = function(color) {
 		//TODO: Special moves (ie castle)
