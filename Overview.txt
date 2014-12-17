@@ -1,3 +1,13 @@
+Install & Run
+---------------------------
+1) If you do not already have Node.js and NPM (Node Package Manager) installed, install them from http://nodejs.org/
+
+2) Once they are installed, open terminal and cd into the Chess-AI project directory and run "npm install". This will install the required dependencies.
+
+3) When the dependencies finish installing, you can run the Chess AI with the following command: "node Play.js GAME_ID TEAM_COLOR". If, for example, the game ID is 500 and this AI is playing as the white team, to begin the AI, you would run: "node Play.js 500 White".
+
+Strategy
+---------------------------
 	Our strategy used minimax with alphabeta pruning. We use prune move that would put kings in check and we sort 
 our move list to maximize pruning. There are serveral extra checks in our alphabeta function. One that says if an move can  take the opponents king, return turn that move without looking at anything else. Another check is for if you AI gets caught it a move loop. The last 4 moves sent to the server are stored in an array, we check if the new move found my alphabeta is in the cache. If it is, we redo alphabeta with that move pruned out of the tree. 
 
