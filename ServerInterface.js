@@ -46,11 +46,11 @@
 					console.log("Calculating move...");
 					var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0)[0];
 					//add move caching
-					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1 ){
+					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1 &&!Chess.boardState.isKingInCheck(Chess.color)){
 						//caught in loop, need to remove move from possibilities
 						newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0, newMove.toUpperCase())[0];
 					}
-					if (Chess.moveCache.length>=Chess.cacheLimit &&!Chess.boardState.isKingInCheck(Chess.color)){
+					if (Chess.moveCache.length>=Chess.cacheLimit){
 						//remove oldest move
 						Chess.moveCache.pop();
 						//add new move
