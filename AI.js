@@ -6,39 +6,32 @@
 		this.limitDepth= 4;
 		this.alpha = -Infinity;
 		this.beta = Infinity;
+		this.sortMoves = function (moves,scores) {return moves.map(function(move, i) {return {m: move, s: scores[i]}}).sort(function(a,b) {return b.s-a.s;}).map(function(o) {return o.m;})}
 	};
 
 	Chess.AI = new AI();
 
 
-	AI.prototype.sortMoves = function(list, playerColor, depth, player){
-		debugger;
-		var score =[];
-		for (var i =0; i<list.length; i++){
+	AI.prototype.sortMoves = function(moves, playerColor, depth, board){
+		
+		var scores =[];
+		for (var i =0; i<moves.length; i++){
 			var boardCopy = Chess.boardState.clone();
-			boardCopy.move(list[i]);
-			score.push(boardCopy.eval(playerColor, -1, 0)) ;
-		}
-		var newListA =[];
-		var newListB =score.slice();
-		var max=0;
-		for (var i = 0; i <Math.min(6, list.length); i++){//first few moves only
-			max = Math.max.apply( Math, newListB);
-			var indexOfMax = score.indexOf(max);
-			newListA.push(list[indexOfMax]);
-			newListB.splice(newListB.indexOf(max), 1);
+			boardCopy.move(moves[i]);
+			scores.push(boardCopy.eval(playerColor, -1, 0)) ;
 		}
 
-		return newListA;
+		return this.sortMoves(moves, scores);
 	}
 
+
 	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player, loopMove) {
-		debugger;
+		//debugger;
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
 		var moveList =board.generateNextMoves(playerColor);
 
-		//moveList = Chess.AI.sortMoves(moveList, playerColor, depth);
+		moveList = Chess.AI.sortMoves(moveList, playerColor, depth, board);
 
 		if (loopMove !==undefined){
 			for (var i=0; i<moveList.length; i++){
