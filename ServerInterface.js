@@ -42,16 +42,16 @@
 					console.log("Calculating move...");
 					var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0)[0];
 					//add move caching
-					if (Chess.moveCache.length>=5){
-						//remove oldest move
-						Chess.moveCache.pop();
-					}
-					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1){
+					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1 ){
 						//caught in loop, need to remove move from possibilities
 						newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0, newMove.toUpperCase())[0];
 					}
-
-					Chess.moveCache.push(newMove.toUpperCase());
+					if (Chess.moveCache.length>=Chess.cacheLimit && newMove.charAt(0).toUpperCase()!='K'){
+						//remove oldest move
+						Chess.moveCache.pop();
+						//add new move
+						Chess.moveCache.push(newMove.toUpperCase());
+					}
 					self.sendMove(newMove);
 				}
 			});

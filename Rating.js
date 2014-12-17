@@ -207,6 +207,7 @@
 				}
 			}
 		}
+
 		return counter/2;
 	}
 
@@ -238,13 +239,13 @@
 	
 	Rating.prototype.rateMovebility= function (color, moveListLength, depth, material){
 		var counter = 0;
-		counter+= moveListLength *5; //5 points per valid move
+		counter+= moveListLength*5; //5 points per valid move
 		if (moveListLength ===0){ //current side is in checkmate or stalemate
 			if (this.boardState.isKingInCheck(color)){
-				counter-=200000*depth;
+				counter-=2000*depth;
 			}
 			else{
-				counter-=150000*depth;
+				counter-=1500*depth;
 			}		
 		}
 		return counter;
@@ -263,8 +264,8 @@
 							//
 							switch(piece.toUpperCase()){
 
-							case "P": counter+=this.pawnBoardWhite[i]; 	break;
-							case 'R': counter+=this.rookBoardWhite[i]; 	break;
+							case "P": counter+=this.pawnBoardWhite[i]; 		break;
+							case 'R': counter+=this.rookBoardWhite[i]; 		break;
 							case 'N': counter+=this.knightBoardWhite[i]; 	break;
 							case 'B': counter+=this.bishopBoardWhite[i]; 	break;
 							case 'Q': counter+=this.queenBoardWhite[i]; 	break;
@@ -286,7 +287,7 @@
 							case 'R': counter+=this.rookBoardBlack[i]; 		break;
 							case 'N': counter+=this.knightBoardBlack[i]; 	break;
 							case 'B': counter+=this.bishopBoardBlack[i]; 	break;
-							case 'Q': counter+=this.queenBoardBlack[i]; 		break;
+							case 'Q': counter+=this.queenBoardBlack[i]; 	break;
 							case 'K': 
 								if (material>=1750){
 									counter+=this.kingMidBoardBlack[i];
