@@ -26,14 +26,30 @@
 
 
 	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player, loopMove) {
-		//debugger;
+		
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
 		var moveList =board.generateNextMoves(playerColor);
 
 		moveList = Chess.AI.sortMoves(moveList, playerColor, depth, board);
+		if (Chess.boardState.isKingInCheck(Chess.color)&&depth === this.limitDepth){
+			//make sure to move king out of checkmate
+			console.log('moving king out of checkmate');
+			for (var i=0;i<moveList.length; i++){
+				//console.log(moveList);
+				var moveInList = moveList[i];
+				var boardCopy = board.clone();
+				boardCopy.move(moveInList);
+				if (!boardCopy.isKingInCheck(Chess.color)){
+					return [moveInList];
+				}
+			
+			}
+			//king is in checkmate so just do a random move so they can take our king
+			return[moveList[0]];
+		}
 
-		if (loopMove !==undefined && Chess.cacheLimit <moveList.length){
+		if (loopMove !==undefined && Chess.cacheLimit<moveList.length){
 			for (var i=0; i<moveList.length; i++){
 				if (moveList[i].toUpperCase()===loopMove.toUpperCase()){
 					moveList.splice(i,1);	

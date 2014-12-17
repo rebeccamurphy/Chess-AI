@@ -46,20 +46,26 @@
 					console.log("Calculating move...");
 					var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0)[0];
 					//add move caching
+					console.log('new move: ' + newMove);
 					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1 &&!Chess.boardState.isKingInCheck(Chess.color)){
 						//caught in loop, need to remove move from possibilities
+						console.log("recalculating move: " +newMove);
 						newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0, newMove.toUpperCase())[0];
+						console.log('new move: ' +newMove);
 					}
 
-					if (Chess.moveCache.lengthChess<= Chess.cacheLimit) {
+					if (Chess.moveCache.length< Chess.cacheLimit) {
+						console.log("cache isnt full yet adding move")
 						Chess.moveCache.push(newMove.toUpperCase());	
 					}
 					else {
+						console.log('cache is full, removing old move and adding new.');
 						//remove oldest move
-						Chess.moveCache.pop();
+						Chess.moveCache.shift();
 						//add new move
 						Chess.moveCache.push(newMove.toUpperCase());
 					}
+					console.log(Chess.moveCache);
 					self.sendMove(newMove);
 				}
 			});

@@ -307,6 +307,7 @@
 
 		return this.isPositionInCheck(kingPos, color);
 	}
+	
 
 	Board.prototype.isPositionInCheck = function(pos, color) {
 		var self = this;
