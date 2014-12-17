@@ -33,7 +33,7 @@
 
 		moveList = Chess.AI.sortMoves(moveList, playerColor, depth, board);
 
-		if (loopMove !==undefined){
+		if (loopMove !==undefined && Chess.cacheLimit <moveList.length){
 			for (var i=0; i<moveList.length; i++){
 				if (moveList[i].toUpperCase()===loopMove.toUpperCase()){
 					moveList.splice(i,1);	
