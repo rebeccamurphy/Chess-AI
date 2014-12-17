@@ -17,7 +17,11 @@
 			console.log("Polling server...");
 			request(self.pollingLink + "/" + Chess.gameId + "/" + Chess.teamNumber + "/" + Chess.teamSecret + "/", function(err, response, body) {
 				if(!err) console.log("Retrieved response: " + body); else console.log("Error while polling..."); 
-				var data = JSON.parse(body);
+				var data;
+				try {
+					data = JSON.parse(body);
+				} catch(e) { return; }
+				
 				Chess.isMyTurn = data.ready;
 				Chess.secondsLeft = data.secondsLeft;
 				Chess.lastMoveNumber = data.lastmovenumber;
