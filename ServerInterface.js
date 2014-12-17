@@ -30,7 +30,7 @@
 					clearInterval(self.pollingInterval);
 					self.pollingInterval = null;
 					console.log("Game over. Winner: " + data.winner);
-					console.log(Chess.boardState.toString());
+					//console.log(Chess.boardState.toString());
 					return;
 				}
 
@@ -40,13 +40,13 @@
 					if(data.lastmove !== "") {
 						Chess.moveStack.unshift(data.lastmove);
 						Chess.boardState.move(data.lastmove); //update game board with last move
-						console.log(Chess.boardState.toString());
+						//console.log(Chess.boardState.toString());
 					}
 					//this should get the ball rolling with the ai
 					console.log("Calculating move...");
 					var newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0)[0];
 					//add move caching
-					console.log('new move: ' + newMove);
+					//console.log('new move: ' + newMove);
 					if (Chess.moveCache.indexOf(newMove.toUpperCase())!==-1 &&!Chess.boardState.isKingInCheck(Chess.color)){
 						//caught in loop, need to remove move from possibilities
 						console.log("recalculating move: " +newMove);
@@ -55,17 +55,17 @@
 					}
 
 					if (Chess.moveCache.length< Chess.cacheLimit) {
-						console.log("cache isnt full yet adding move")
+						//console.log("cache isnt full yet adding move")
 						Chess.moveCache.push(newMove.toUpperCase());	
 					}
 					else {
-						console.log('cache is full, removing old move and adding new.');
+						//console.log('cache is full, removing old move and adding new.');
 						//remove oldest move
 						Chess.moveCache.shift();
 						//add new move
 						Chess.moveCache.push(newMove.toUpperCase());
 					}
-					console.log(Chess.moveCache);
+					//console.log(Chess.moveCache);
 					self.sendMove(newMove);
 				}
 			});
@@ -93,7 +93,7 @@
 					Chess.isMyTurn = false;
 					Chess.boardState.move(moveString);
 					Chess.err = 0;
-					console.log(Chess.boardState.toString());
+					//console.log(Chess.boardState.toString());
 					self.poll();
 				} else {
 					console.log("Attempted invalid move. Err: " + (++Chess.err));

@@ -34,7 +34,7 @@
 		moveList = Chess.AI.sortMoves(moveList, playerColor, depth, board);
 		if (Chess.boardState.isKingInCheck(Chess.color)&&depth === this.limitDepth){
 			//make sure to move king out of checkmate
-			console.log('moving king out of checkmate');
+			//console.log('moving king out of checkmate');
 			for (var i=0;i<moveList.length; i++){
 				//console.log(moveList);
 				var moveInList = moveList[i];
