@@ -7,7 +7,7 @@ module.exports = (function() {
 		moveStack: [],
 		lastMoveNumber: -1,
 		moveCache: [],
-		cacheLimit:4,
+		cacheLimit:3,
 		secondsLeft: -1,
 		boardState: null,
 		ratingSystem:null,

@@ -50,7 +50,11 @@
 						//caught in loop, need to remove move from possibilities
 						newMove = Chess.AI.alphaBeta(Chess.AI.limitDepth, Chess.AI.alpha, Chess.AI.beta, '', Chess.boardState, 0, newMove.toUpperCase())[0];
 					}
-					if (Chess.moveCache.length>=Chess.cacheLimit){
+
+					if (Chess.moveCache.lengthChess<= Chess.cacheLimit) {
+						Chess.moveCache.push(newMove.toUpperCase());	
+					}
+					else {
 						//remove oldest move
 						Chess.moveCache.pop();
 						//add new move
