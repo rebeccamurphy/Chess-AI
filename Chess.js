@@ -6,6 +6,7 @@ module.exports = (function() {
 		opponentColor: "",
 		moveStack: [],
 		lastMoveNumber: -1,
+		moveCache: [],
 		secondsLeft: -1,
 		boardState: null,
 		ratingSystem:null,
@@ -30,7 +31,7 @@ module.exports = (function() {
 			this.boardState = new this.Board();
 			this.ratingSystem = new this.Rating();
 			this.ServerInterface.poll();
-			console.log(Chess.boardState.toString());
+			//console.log(Chess.boardState.toString());
 		}
 	};
 

@@ -11,38 +11,44 @@
 	Chess.AI = new AI();
 
 
-	AI.prototype.sortMoves = function(list){
+	AI.prototype.sortMoves = function(list, playerColor, depth, player){
+		debugger;
 		var score =[];
 		for (var i =0; i<list.length; i++){
-			var boardCopy = Chess.Board.clone();
-			boardCopy.makeMove(list[i]);
-			score.push(-boardCopy.eval());
+			var boardCopy = Chess.boardState.clone();
+			boardCopy.move(list[i]);
+			score.push(boardCopy.eval(playerColor, -1, 0)) ;
 		}
 		var newListA =[];
-		var newListB =list.slice();
-
+		var newListB =score.slice();
+		var max=0;
 		for (var i = 0; i <Math.min(6, list.length); i++){//first few moves only
-			var max = -Infinity, maxLocation =0;
-			for (var j=0; j<list.length; j++){
-				if (score[j] > max){
-					max = score[j];
-					maxLocation=j;
-				}
-			score[maxLocation]= -Infinity;
-			newListA.push(list[maxLocation]);
-			newListB.splice(maxLocation, 1);
-			}
+			max = Math.max.apply( Math, newListB);
+			var indexOfMax = score.indexOf(max);
+			newListA.push(list[indexOfMax]);
+			newListB.splice(newListB.indexOf(max), 1);
 		}
 
-		return newListA.push.apply(newListA, newListB);
-
+		return newListA;
 	}
 
-	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player) {
-		//
+	AI.prototype.alphaBeta = function(depth, alpha, beta, move, board, player, loopMove) {
+		debugger;
 		var playerColor = (player===0)? Chess.color :Chess.Helpers.flipColor(Chess.color);
 		
 		var moveList =board.generateNextMoves(playerColor);
+
+		//moveList = Chess.AI.sortMoves(moveList, playerColor, depth);
+
+		if (loopMove !==undefined){
+			for (var i=0; i<moveList.length; i++){
+				if (moveList[i].toUpperCase()===loopMove.toUpperCase()){
+					moveList.splice(i,1);	
+					break;
+				}
+			}
+		}
+
 		if (depth===0|| moveList.length ===0){
 			board.move(move);
 			return [move, board.eval(playerColor, moveList.length, depth) *(player*2-1)]; 
@@ -60,7 +66,6 @@
 			}
 		}
 
-		//moveList = this.sortMoves(moveList);
 
 		//sort moveList later;
 		//remove moves that make king in check
